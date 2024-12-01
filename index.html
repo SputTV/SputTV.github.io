@@ -49,47 +49,46 @@
 <body>
     <div class="container">
         <h1>SputTV</h1>
-        <button id="open-form">Оставить заявку</button>
-        <form id="request-form" style="display:none;">
-            <textarea id="problem" placeholder="Краткое описание проблемы" required></textarea>
-            <input type="text" id="phone" placeholder="Контактный номер" required>
-            <input type="text" id="address" placeholder="Адрес проживания" required>
-            <button type="button" id="send-request">Отправить заявку</button>
+        <form id="request-form">
+            <textarea id="messageInput" placeholder="Краткое описание проблемы" required></textarea>
+            <input type="text" id="contactInput" placeholder="Контактный номер" required>
+            <input type="text" id="addressInput" placeholder="Адрес проживания" required>
+            <button type="button" id="submitButton">Отправить заявку</button>
         </form>
     </div>
     <script>
-        document.getElementById('open-form').addEventListener('click', function() {
-            document.getElementById('open-form').style.display = 'none';
-            document.getElementById('request-form').style.display = 'block';
-        });
-
         document.getElementById("submitButton").addEventListener("click", () => {
-    const message = document.getElementById("messageInput").value;
-    const contactNumber = document.getElementById("contactInput").value;
-    const address = document.getElementById("addressInput").value;
+            const message = document.getElementById("messageInput").value;
+            const contactNumber = document.getElementById("contactInput").value;
+            const address = document.getElementById("addressInput").value;
 
-    fetch('http://localhost:5000/api/requests', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            message: message,
-            contact_number: contactNumber,
-            address: address,
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Заявка отправлена!");
-        } else {
-            alert("Ошибка: " + data.error);
-        }
-    })
-    .catch(error => console.error('Ошибка:', error));
-});
+            if (!message || !contactNumber || !address) {
+                alert("Пожалуйста, заполните все поля!");
+                return;
+            }
 
+            fetch('http://localhost:5000/api/requests', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    contact_number: contactNumber,
+                    address: address,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Заявка отправлена!");
+                    document.getElementById("request-form").reset();
+                } else {
+                    alert("Ошибка: " + data.error);
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+        });
     </script>
 </body>
 </html>
